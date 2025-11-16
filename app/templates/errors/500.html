@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}500 - Greška poslužitelja{% endblock %}
+
+{% block content %}
+<div class="text-center py-5">
+  <h1 class="display-3">500</h1>
+  <p class="lead">Tim uklanja grešku.</p>
+  <a class="btn btn-primary" href="{{ url_for('main.index') }}">Povratak</a>
+</div>
+{% endblock %}

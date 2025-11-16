@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Početna - Student Market{% endblock %}
+
+{% block content %}
+
+<div class="py-4">
+  <h1>Dobrodošli na Student Market!</h1>
+  <p class="lead">Prodaja, razmjena i poklanjanje studentskih stvari – sve na jednom mjestu.</p>
+  <hr>
+
+  {% if current_user.is_authenticated %}
+    <a class="btn btn-success" href="{{ url_for('ads.create_ad') }}">Objavi oglas</a>
+  {% else %}
+    <a class="btn btn-primary" href="{{ url_for('auth.register') }}">Registriraj se</a>
+  {% endif %}
+</div>
+
+<h2 class="mt-4">Najnoviji oglasi</h2>
+
+{% if ads %}
+<div class="row row-cols-1 row-cols-md-2 g-4 mt-2">
+  {% for ad in ads %}
+  <div class="col">
+    <div class="card h-100">
+
+      {% if ad.image_id %}
+      <img src="{{ url_for('ads.serve_image', image_id=ad.image_id) }}" class="card-img-top">
+      {% else %}
+      <div class="p-5 text-center bg-light">Nema slike</div>
+      {% endif %}
+
+      <div class="card-body">
+        <h5>{{ ad.title }}</h5>
+        <p>{{ ad.description[:130] }}{% if ad.description|length > 130 %}...{% endif %}</p>
+
+        <strong>{{ ad.price }} HRK</strong>
+      </div>
+
+      <div class="card-footer text-end">
+        <a class="btn btn-primary btn-sm" href="{{ url_for('ads.view_ad', ad_id=ad.id) }}">Detalji</a>
+      </div>
+
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<div class="mt-3">
+  <a href="{{ url_for('ads.list_ads') }}">Pogledaj sve oglase ({{ total }})</a>
+</div>
+
+{% else %}
+<div class="alert alert-info mt-3">Trenutno nema oglasa.</div>
+{% endif %}
+
+{% endblock %}

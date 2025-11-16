@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Oglasi{% endblock %}
+
+{% block content %}
+
+<h2 class="mt-3">Svi oglasi</h2>
+
+<form class="d-flex mt-3 mb-4" method="get">
+  <input class="form-control me-2" type="text" name="search" placeholder="Pretraži..." value="{{ search or '' }}">
+  <select class="form-select me-2" name="category">
+    <option value="">Sve kategorije</option>
+    {% for v, label in categories %}
+    <option value="{{ v }}" {% if v==category %}selected{% endif %}>{{ label }}</option>
+    {% endfor %}
+  </select>
+  <button class="btn btn-primary">Filtriraj</button>
+</form>
+
+{% if ads %}
+<div class="row row-cols-1 row-cols-md-2 g-4">
+  {% for ad in ads %}
+  <div class="col">
+    <div class="card h-100">
+
+      {% if ad.image_id %}
+      <img src="{{ url_for('ads.serve_image', image_id=ad.image_id) }}" class="card-img-top">
+      {% endif %}
+
+      <div class="card-body">
+        <h5>{{ ad.title }}</h5>
+        <p>{{ ad.description[:120] }}{% if ad.description|length > 120 %}...{% endif %}</p>
+        <strong>{{ ad.price }} HRK</strong>
+      </div>
+
+      <div class="card-footer text-end">
+        <a href="{{ url_for('ads.view_ad', ad_id=ad.id) }}" class="btn btn-primary btn-sm">Detalji</a>
+      </div>
+
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="alert alert-info mt-3">Nema rezultata.</div>
+{% endif %}
+
+{% endblock %}

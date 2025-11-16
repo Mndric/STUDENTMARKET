@@ -2,14 +2,86 @@
 <html lang="hr">
 <head>
    <meta charset="UTF-8">
-   <meta name="viewport" content="width=device-width,initial-scale=1">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
    <title>{% block title %}Student Market{% endblock %}</title>
 
    <!-- Bootstrap -->
    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
-   <!-- Custom Student Market Style -->
-   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+   <!-- INLINE STUDENT MARKET BEIGE CSS -->
+   <style>
+   /* ===== Student Market Beige Theme ===== */
+
+   body.theme-beige {
+       background-color: #f7f4ef;
+       color: #3b3b3b;
+       font-family: "Segoe UI", Arial, sans-serif;
+   }
+
+   .navbar.bg-primary {
+       background-color: #c6a98b !important;
+   }
+
+   .navbar .nav-link {
+       color: #fff !important;
+   }
+   .navbar .nav-link:hover {
+       color: #f7f4ef !important;
+   }
+
+   .btn-primary {
+       background-color: #c6a98b;
+       border-color: #c6a98b;
+   }
+   .btn-primary:hover {
+       background-color: #b59778;
+       border-color: #b59778;
+   }
+
+   .btn-success {
+       background-color: #96b28b;
+       border-color: #96b28b;
+   }
+   .btn-success:hover {
+       background-color: #7e9c73;
+       border-color: #7e9c73;
+   }
+
+   .card {
+       background-color: #faf7f2;
+       border: 1px solid #e1d7cc;
+       border-radius: 12px;
+   }
+
+   .card-footer {
+       background-color: #f0e9e1;
+   }
+
+   .form-control, .form-select {
+       background-color: #fbf9f5;
+       border: 1px solid #d7c9bb;
+   }
+   .form-control:focus, .form-select:focus {
+       border-color: #c6a98b;
+       box-shadow: 0 0 0 0.2rem rgba(198, 169, 139, 0.3);
+   }
+
+   footer.bg-light {
+       background-color: #e9e2d8 !important;
+   }
+
+   a {
+       color: #a07f63;
+   }
+   a:hover {
+       color: #8d6f55;
+   }
+
+   .alert-info {
+       background-color: #f0ebe4;
+       border-color: #e2d7ca;
+   }
+   </style>
 
    {% block extra_css %}{% endblock %}
 </head>
@@ -20,16 +92,16 @@
   <div class="container">
     <a class="navbar-brand fw-bold" href="{{ url_for('main.index') }}">Student Market</a>
 
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
+    <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#nav">
       <span class="navbar-toggler-icon"></span>
     </button>
 
-    <div class="collapse navbar-collapse" id="nav">
+    <div id="nav" class="collapse navbar-collapse">
       <ul class="navbar-nav me-auto">
         <li class="nav-item"><a class="nav-link" href="{{ url_for('ads.list_ads') }}">Oglasi</a></li>
         {% if current_user.is_authenticated %}
-        <li class="nav-item"><a class="nav-link" href="{{ url_for('ads.create_ad') }}">Objavi oglas</a></li>
-        <li class="nav-item"><a class="nav-link" href="{{ url_for('ads.my_ads') }}">Moji oglasi</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('ads.create_ad') }}">Objavi oglas</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('ads.my_ads') }}">Moji oglasi</a></li>
         {% endif %}
       </ul>
 
@@ -46,19 +118,17 @@
         {% endif %}
       </ul>
     </div>
-
   </div>
 </nav>
 
 <div class="container mt-4">
-
   {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
-      {% for category, msg in messages %}
-        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-          {{ msg }}
-          <button class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
+      {% for category, message in messages %}
+      <div class="alert alert-{{ category }} alert-dismissible fade show">
+        {{ message }}
+        <button class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
       {% endfor %}
     {% endif %}
   {% endwith %}
@@ -68,11 +138,12 @@
 
 <footer class="bg-light py-3 mt-5 shadow-sm">
   <div class="container text-center">
-    <small>© {{ current_year }} Student Market | <a href="{{ url_for('main.about') }}">O nama</a></small>
+    © 2024 Student Market | <a href="{{ url_for('main.about') }}">O nama</a>
   </div>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 {% block extra_js %}{% endblock %}
 </body>
 </html>
