@@ -14,6 +14,8 @@ mail = Mail()
 limiter = Limiter(key_func=get_remote_address, default_limits=["200 per day", "50 per hour"], storage_uri="memory://")
 csrf = CSRFProtect()
 
+
+
 admin_permission = Permission(RoleNeed('admin'))
 
 def create_app(config_name='default'):
@@ -30,9 +32,21 @@ def create_app(config_name='default'):
 
     login_manager.login_view = 'auth.login'
     login_manager.login_message = 'Molimo prijavite se za pristup ovoj stranici.'
-    login_manager.login_message_category = 'warning'
+    login_manager.login_message_category = "warning"
+
+    from app.auth import auth_bp
+    from app.main import main_bp
+    from app.ads import ads_bp
+    from app.admin import admin_bp
+    from app.profile import profile_bp
 
     from app.models import User as UserModel
+
+    app.register_blueprint(auth_bp, url_prefix='/auth')
+    app.register_blueprint(main_bp)
+    app.register_blueprint(ads_bp, url_prefix='/ads')
+    app.register_blueprint(admin_bp, url_prefix='/admin')
+    app.register_blueprint(profile_bp, url_prefix='/profile')
 
     @login_manager.user_loader
     def load_user(user_id):
@@ -46,18 +60,6 @@ def create_app(config_name='default'):
         if hasattr(current_user, 'role'):
             identity.provides.add(RoleNeed(current_user.role))
 
-    # register blueprints
-    from app.auth import auth_bp
-    from app.main import main_bp
-    from app.ads import ads_bp
-    from app.admin import admin_bp
-    from app.profile import profile_bp
-
-    app.register_blueprint(auth_bp, url_prefix='/auth')
-    app.register_blueprint(main_bp)
-    app.register_blueprint(ads_bp, url_prefix='/ads')
-    app.register_blueprint(admin_bp, url_prefix='/admin')
-    app.register_blueprint(profile_bp, url_prefix='/profile')
 
     register_error_handlers(app)
 
@@ -101,7 +103,26 @@ def create_admin_user():
     admin_password_hash = current_app.config.get('ADMIN_PASSWORD_HASH')
     if not admin_username or not admin_password_hash:
         return
-    existing = User.get_by_username(admin_username)
+    # Defensive: ensure mongo has been initialized and a DB is available.
+    try:
+        from app import mongo
+        if getattr(mongo, 'db', None) is None:
+            print("Warning: MongoDB not initialized (mongo.db is None). Skipping admin creation.")
+            return
+    except Exception as e:
+        print(f"Warning: Error checking MongoDB initialization: {e}. Skipping admin creation.")
+        return
+
+    try:
+        existing = User.get_by_username(admin_username)
+    except Exception as e:
+        # If something goes wrong querying the DB at startup, skip admin creation
+        print(f"Warning: could not query users collection: {e}. Skipping admin creation.")
+        return
+
     if not existing:
-        User.create_admin(admin_username, admin_email, admin_password_hash)
-        print(f"Admin user '{admin_username}' created.")
+        try:
+            User.create_admin(admin_username, admin_email, admin_password_hash)
+            print(f"Admin user '{admin_username}' created.")
+        except Exception as e:
+            print(f"Warning: failed to create admin user: {e}")
