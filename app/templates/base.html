@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="hr">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width,initial-scale=1">
+   <title>{% block title %}Student Market{% endblock %}</title>
+
+   <!-- Bootstrap -->
+   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+   <!-- Custom Student Market Style -->
+   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+   {% block extra_css %}{% endblock %}
+</head>
+
+<body class="theme-beige">
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+  <div class="container">
+    <a class="navbar-brand fw-bold" href="{{ url_for('main.index') }}">Student Market</a>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="nav">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('ads.list_ads') }}">Oglasi</a></li>
+        {% if current_user.is_authenticated %}
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('ads.create_ad') }}">Objavi oglas</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('ads.my_ads') }}">Moji oglasi</a></li>
+        {% endif %}
+      </ul>
+
+      <ul class="navbar-nav">
+        {% if current_user.is_authenticated %}
+          {% if current_user.role == 'admin' %}
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.list_users') }}">⚙ Admin</a></li>
+          {% endif %}
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('profile.view_profile') }}">Profil</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.logout') }}">Odjava</a></li>
+        {% else %}
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.login') }}">Prijava</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.register') }}">Registracija</a></li>
+        {% endif %}
+      </ul>
+    </div>
+
+  </div>
+</nav>
+
+<div class="container mt-4">
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, msg in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+          {{ msg }}
+          <button class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  {% block content %}{% endblock %}
+</div>
+
+<footer class="bg-light py-3 mt-5 shadow-sm">
+  <div class="container text-center">
+    <small>© {{ current_year }} Student Market | <a href="{{ url_for('main.about') }}">O nama</a></small>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>
